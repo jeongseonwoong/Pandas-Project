@@ -2,7 +2,7 @@ import os
 import pandas as pd
 
 # 경로 및 파일 설정
-path = r"C:\Users\user\github\python\python_project\data"
+path = r"C:\Users\user\github\Pandas-Project\data"
 file_name = "chess.csv"  # 파일 이름 변경
 file_path = os.path.join(path, file_name)
 
