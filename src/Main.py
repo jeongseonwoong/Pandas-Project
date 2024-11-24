@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import matplotlib.pyplot as plt
 
 # 경로 및 파일 설정
 file_path = r"C:\Users\user\github\Pandas-Project\data\chess.csv"
@@ -60,32 +61,46 @@ else:
         pd.set_option('display.width', None)  # 모든 내용 출력
         print(closest_openings[['white_win_rate', 'black_win_rate', 'draw_rate', 'total_games', 'win_rate_diff']])
 
+        # 그래프로 시각화
+        closest_openings_plot = closest_openings[['white_win_rate', 'black_win_rate', 'draw_rate']]
+        closest_openings_plot.plot(kind='bar', stacked=True, figsize=(10, 6))
+        plt.title('Top 5 Closest Win Rate Openings')
+        plt.xlabel('Opening Name')
+        plt.ylabel('Win Rate')
+        plt.xticks(rotation=45, ha='right')
+        plt.legend(['White Win Rate', 'Black Win Rate', 'Draw Rate'])
+        plt.tight_layout()
+        plt.show()
+
         # 가장 승률이 접전인 오프닝에서 백과 흑의 가장 빠른 승리 찾기
-        print("\n최고로 승률이 접전인 오프닝에서 백과 흑의 가장 빠른 승리:")
+        print("\n최고로 승률이 접전인 오프닝에서 백과 흑의 가장 느린 승리:")
         most_closet_opening_data = data[data['opening_name'] == most_closet_opening_name]
         white_wins = most_closet_opening_data[most_closet_opening_data['winner'] == 'white']
         black_wins = most_closet_opening_data[most_closet_opening_data['winner'] == 'black']
 
         if not white_wins.empty:
-            fastest_white_win = white_wins.loc[white_wins['turns'].idxmin()]
-            print("\n백의 가장 빠른 승리:")
+            fastest_white_win = white_wins.loc[white_wins['turns'].idxmax()]
+            print("\n백의 가장 느린 승리:")
             white_moves = fastest_white_win['moves'].split()
             for i in range(0, len(white_moves), 2):
                 move_number = (i // 2) + 1
                 white_move = white_moves[i]
                 black_move = white_moves[i + 1] if i + 1 < len(white_moves) else "(no move)"
                 print(f"{move_number}. {white_move}   {black_move}")
+            print(f"승리 상태: {fastest_white_win['victory_status']}")
         else:
             print("\n백의 승리 데이터가 없습니다.")
 
         if not black_wins.empty:
-            fastest_black_win = black_wins.loc[black_wins['turns'].idxmin()]
-            print("\n흑의 가장 빠른 승리:")
+            fastest_black_win = black_wins.loc[black_wins['turns'].idxmax()]
+            print("\n흑의 가장 느린 승리:")
             black_moves = fastest_black_win['moves'].split()
             for i in range(0, len(black_moves), 2):
                 move_number = (i // 2) + 1
                 white_move = black_moves[i]
                 black_move = black_moves[i + 1] if i + 1 < len(black_moves) else "(no move)"
                 print(f"{move_number}. {white_move}   {black_move}")
+            print(f"승리 상태: {fastest_black_win['victory_status']}")
+
         else:
             print("\n흑의 승리 데이터가 없습니다.")
