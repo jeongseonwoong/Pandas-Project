@@ -66,3 +66,26 @@ else:
         white_wins = most_closet_opening_data[most_closet_opening_data['winner'] == 'white']
         black_wins = most_closet_opening_data[most_closet_opening_data['winner'] == 'black']
 
+        if not white_wins.empty:
+            fastest_white_win = white_wins.loc[white_wins['turns'].idxmin()]
+            print("\n백의 가장 빠른 승리:")
+            white_moves = fastest_white_win['moves'].split()
+            for i in range(0, len(white_moves), 2):
+                move_number = (i // 2) + 1
+                white_move = white_moves[i]
+                black_move = white_moves[i + 1] if i + 1 < len(white_moves) else "(no move)"
+                print(f"{move_number}. {white_move}   {black_move}")
+        else:
+            print("\n백의 승리 데이터가 없습니다.")
+
+        if not black_wins.empty:
+            fastest_black_win = black_wins.loc[black_wins['turns'].idxmin()]
+            print("\n흑의 가장 빠른 승리:")
+            black_moves = fastest_black_win['moves'].split()
+            for i in range(0, len(black_moves), 2):
+                move_number = (i // 2) + 1
+                white_move = black_moves[i]
+                black_move = black_moves[i + 1] if i + 1 < len(black_moves) else "(no move)"
+                print(f"{move_number}. {white_move}   {black_move}")
+        else:
+            print("\n흑의 승리 데이터가 없습니다.")
