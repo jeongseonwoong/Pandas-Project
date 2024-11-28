@@ -114,7 +114,7 @@ else:
     print("분류 리포트:\n", classification_report(y_test, y_pred))
 
     # moves에 따른 흑과 백의 승률 예측 시각화
-    X_full = pd.DataFrame({'move_count': range(1, 300)})  # 1부터 100까지의 move_count
+    X_full = pd.DataFrame({'move_count': range(1, 200)})  # 1부터 100까지의 move_count
     y_pred_full = model.predict_proba(X_full)
 
     plt.figure(figsize=(10, 6))
