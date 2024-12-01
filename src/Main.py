@@ -55,6 +55,20 @@ else:
         print(f"\n{most_common_opening} - {variation}의 승률:")
         print(win_rate)
 
+    # 상위 5개의 Variation에 대한 승률 시각화
+    plt.figure(figsize=(10, 6))
+    for variation in variation_counts.head().index:
+        win_rate = variation_win_rates.loc[variation]
+        plt.bar(variation, win_rate.get('white', 0), label=f'{variation} - White Win Rate', alpha=0.6)
+        plt.bar(variation, win_rate.get('black', 0), bottom=win_rate.get('white', 0), label=f'{variation} - Black Win Rate', alpha=0.6)
+    plt.xlabel('Variation', fontproperties=fontprop)
+    plt.ylabel('Win Rate', fontproperties=fontprop)
+    plt.title(f'{most_common_opening}의 상위 5개 Variation 별 승률', fontproperties=fontprop)
+    plt.legend(prop=fontprop)
+    plt.grid(axis='y')
+    plt.tight_layout()
+    plt.show()
+
     # 상위 5개 Variation 중 가장 접전인 Variation 선택 (승률 차이가 가장 적은 Variation)
     closest_variation = variation_win_rates.loc[variation_counts.head().index].apply(lambda x: abs(x.get('white', 0) - x.get('black', 0)), axis=1).idxmin()
 
@@ -98,16 +112,4 @@ else:
     plt.tight_layout()
     plt.show()
 
-    # 상위 5개의 Variation에 대한 승률 시각화
-    plt.figure(figsize=(10, 6))
-    for variation in variation_counts.head().index:
-        win_rate = variation_win_rates.loc[variation]
-        plt.bar(variation, win_rate.get('white', 0), label=f'{variation} - White Win Rate', alpha=0.6)
-        plt.bar(variation, win_rate.get('black', 0), bottom=win_rate.get('white', 0), label=f'{variation} - Black Win Rate', alpha=0.6)
-    plt.xlabel('Variation', fontproperties=fontprop)
-    plt.ylabel('Win Rate', fontproperties=fontprop)
-    plt.title(f'{most_common_opening}의 상위 5개 Variation 별 승률', fontproperties=fontprop)
-    plt.legend(prop=fontprop)
-    plt.grid(axis='y')
-    plt.tight_layout()
-    plt.show()
+
