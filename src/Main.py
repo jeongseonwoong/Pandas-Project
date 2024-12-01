@@ -54,10 +54,10 @@ else:
     # 백 승률 변화 선그래프로 시각화
     plt.figure(figsize=(10, 6))
     plt.plot(highest_white_opening_data['move_count'], highest_white_opening_data['white_win_rate'], label='White Win Rate',
-             color='b')
-    plt.title(f'Win Rate Changes Over Moves for {highest_white_win_opening}')
+             color='lightgray')
+    plt.title(f"Highest White win rate opening {highest_white_win_opening}'s Win Rate Changes Over Moves")
     plt.xlabel('Number of Moves')
-    plt.ylabel('White Win Rate')
+    plt.ylabel('Black Win Rate')
     plt.legend()
     plt.tight_layout()
     plt.show()
@@ -75,8 +75,8 @@ else:
     # 흑 승률 변화 선그래프로 시각화
     plt.figure(figsize=(10, 6))
     plt.plot(highest_black_opening_data['move_count'], highest_black_opening_data['black_win_rate'], label='Black Win Rate',
-             color='r')
-    plt.title(f'Win Rate Changes Over Moves for {highest_black_win_opening}')
+             color='black')
+    plt.title(f"Highest Black win rate opening {highest_black_win_opening}'s Win Rate Changes Over Moves")
     plt.xlabel('Number of Moves')
     plt.ylabel('Black Win Rate')
     plt.legend()
@@ -114,13 +114,13 @@ else:
     print("분류 리포트:\n", classification_report(y_test, y_pred))
 
     # moves에 따른 흑과 백의 승률 예측 시각화
-    X_full = pd.DataFrame({'move_count': range(1, 200)})  # 1부터 100까지의 move_count
+    X_full = pd.DataFrame({'move_count': range(1, 150)})  # 1부터 100까지의 move_count
     y_pred_full = model.predict_proba(X_full)
 
     plt.figure(figsize=(10, 6))
-    plt.plot(X_full['move_count'], pd.Series(y_pred_full[:, le.transform(['white'])[0]]).rolling(window=10).mean(), label='Predicted White Win Rate (Smoothed)', color='b')
-    plt.plot(X_full['move_count'], pd.Series(y_pred_full[:, le.transform(['black'])[0]]).rolling(window=10).mean(), label='Predicted Black Win Rate (Smoothed)', color='r')
-    plt.plot(X_full['move_count'], pd.Series(y_pred_full[:, le.transform(['draw'])[0]]).rolling(window=10).mean(), label='Predicted Draw Rate (Smoothed)', color='g')
+    plt.plot(X_full['move_count'], pd.Series(y_pred_full[:, le.transform(['white'])[0]]).rolling(window=10).mean(), label=f'Predicted {highest_white_win_opening} Win Rate', color='lightgray')
+    plt.plot(X_full['move_count'], pd.Series(y_pred_full[:, le.transform(['black'])[0]]).rolling(window=10).mean(), label=f'Predicted {highest_black_win_opening} Win Rate', color='black')
+    plt.plot(X_full['move_count'], pd.Series(y_pred_full[:, le.transform(['draw'])[0]]).rolling(window=10).mean(), label='Predicted Draw Rate', color='g')
     plt.title(f'Predicted Win Rate Changes Over Moves for {highest_white_win_opening} vs {highest_black_win_opening}')
     plt.xlabel('Number of Moves')
     plt.ylabel('Predicted Win Rate')
