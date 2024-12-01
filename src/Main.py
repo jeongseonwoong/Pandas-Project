@@ -26,7 +26,6 @@ else:
 
     # 오프닝 이름에서 기본 오프닝과 Variation 분리
     data[['base_opening', 'variation']] = data['opening_name'].str.split(': ', n=1, expand=True)
-    print(data)
 
     # 가장 많이 등장하는 기본 오프닝 1개 선택
     most_common_opening = data['base_opening'].value_counts().idxmax()
@@ -38,6 +37,17 @@ else:
 
     # 각 Variation별 승률 계산
     variation_win_rates = data[data['base_opening'] == most_common_opening].groupby('variation')['winner'].value_counts(normalize=True).unstack().fillna(0)
+    print("\nGroupBy 변수 요약:")
+    print(variation_win_rates.describe())
+    print("\nGroupBy 변수 합계:")
+    print(variation_win_rates.sum())
+    print("\nGroupBy 변수 최대값:")
+    print(variation_win_rates.max())
+
+    # 각 승리 유형별 평균값 출력
+    print(f"\n백 승리의 평균 승률: {variation_win_rates['white'].mean():.2f}")
+    print(f"흑 승리의 평균 승률: {variation_win_rates['black'].mean():.2f}")
+    print(f"무승부의 평균 승률: {variation_win_rates['draw'].mean():.2f}")
 
     # 상위 5개의 Variation에 대한 승률 출력
     for variation in variation_counts.head().index:
@@ -45,10 +55,11 @@ else:
         print(f"\n{most_common_opening} - {variation}의 승률:")
         print(win_rate)
 
+    # 상위 5개 Variation 중 가장 접전인 Variation 선택 (승률 차이가 가장 적은 Variation)
+    closest_variation = variation_win_rates.loc[variation_counts.head().index].apply(lambda x: abs(x.get('white', 0) - x.get('black', 0)), axis=1).idxmin()
+
     # 각 Variation별 turns에 따른 승률 예측을 위한 데이터 준비
-    variation_data = data[data['base_opening'] == most_common_opening]
-    top_variation = variation_counts.head(1).index[0]
-    variation_data = variation_data[variation_data['variation'] == top_variation]
+    variation_data = data[(data['base_opening'] == most_common_opening) & (data['variation'] == closest_variation)]
 
     # 특징과 타겟 설정 (turns와 승자)
     X = variation_data[['turns']]
@@ -76,17 +87,12 @@ else:
     # 예측 결과 스무딩 처리
     smoothed_win_probabilities = pd.Series(win_probabilities).rolling(window=10, min_periods=1).mean()
 
-    # 예측 결과 출력
-    prediction_df = pd.DataFrame({'turns': turns_range['turns'], 'predicted_white_win_rate': smoothed_win_probabilities})
-    print(f"\n{most_common_opening} - {top_variation}의 turns에 따른 승률 예측:")
-    print(prediction_df)
-
     # 예측 결과 시각화
     plt.figure(figsize=(10, 6))
-    plt.plot(prediction_df['turns'], prediction_df['predicted_white_win_rate'], label=f'Predicted Win Rate ({top_variation})', color='b')
+    plt.plot(turns_range['turns'], smoothed_win_probabilities, label=f'Predicted Win Rate ({closest_variation})', color='b')
     plt.xlabel('Number of Turns', fontproperties=fontprop)
     plt.ylabel('Predicted White Win Rate', fontproperties=fontprop)
-    plt.title(f'{most_common_opening} - {top_variation}의 Turns에 따른 예측 승률 변화', fontproperties=fontprop)
+    plt.title(f'{most_common_opening} - {closest_variation}의 Turns에 따른 예측 승률 변화', fontproperties=fontprop)
     plt.legend(prop=fontprop)
     plt.grid()
     plt.tight_layout()
